@@ -1,0 +1,34 @@
+{
+    "name": "fxp/sms-sender",
+    "type": "library",
+    "description": "A powerful system for creating and sending SMS",
+    "keywords": ["SMS"],
+    "homepage": "https://github.com/fxpio/fxp-sms-sender",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "François Pluchino",
+            "email": "francois.pluchino@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": "^7.1.0",
+        "giggsey/libphonenumber-for-php": "^8.3.0",
+        "psr/log": "^1.0.0",
+        "symfony/event-dispatcher": "^4.3.0",
+        "symfony/mime": "^4.3.0"
+    },
+    "autoload": {
+        "psr-4": { "Fxp\\Component\\SmsSender\\": "" },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0-dev"
+        }
+    }
+}
