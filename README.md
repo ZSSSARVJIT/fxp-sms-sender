@@ -6,12 +6,21 @@ Fxp SMS Sender
 [![Coverage Status](https://img.shields.io/coveralls/fxpio/fxp-sms-sender/master.svg)](https://coveralls.io/r/fxpio/fxp-sms-sender?branch=master)
 [![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/g/fxpio/fxp-sms-sender/master.svg)](https://scrutinizer-ci.com/g/fxpio/fxp-sms-sender?branch=master)
 
-The Fxp SMS Sender is a powerful system for creating and sending SMS.
+The Fxp SMS Sender is a powerful system for creating and sending SMS. Like
+[Symfony Mailer](https://symfony.com/doc/current/mailer.html) for emails, this library
+use the [Symfony Mime](https://symfony.com/doc/current/components/mime.html) to build the
+messages. It uses the same logic to create and send the message via several transports.
 
 Features include:
 
+- Create simply a SMS message like an email for Symfony Mailer
 - Available transports:
+ - Null transport (to not really send the SMS)
+ - Failover transport
+ - Round Robin transport
+- Available 3rd party transports:
   - Amazon AWS with [Fxp Amazon SMS Sender](https://github.com/fxpio/fxp-amazon-sms-sender)
+  - Twilio with [Fxp Amazon SMS Sender](https://github.com/fxpio/fxp-twilio-sms-sender)
 
 Documentation
 -------------

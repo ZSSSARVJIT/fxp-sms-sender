@@ -1,0 +1,50 @@
+<?php
+
+/*
+ * This file is part of the Fxp package.
+ *
+ * (c) François Pluchino <francois.pluchino@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Fxp\Component\SmsSender\Exception;
+
+use Fxp\Component\SmsSender\Transport\Result;
+
+/**
+ * Base TransportResultException for the SmsSender component.
+ *
+ * @author François Pluchino <francois.pluchino@gmail.com>
+ */
+class TransportResultException extends RuntimeException implements TransportExceptionInterface
+{
+    /**
+     * @var Result
+     */
+    private $result;
+
+    public function __construct(Result $result, $code = 0)
+    {
+        parent::__construct($this->buildMessage($result), $code);
+
+        $this->result = $result;
+    }
+
+    public function getResult(): Result
+    {
+        return $this->result;
+    }
+
+    private function buildMessage(Result $result): string
+    {
+        $errors = [];
+
+        foreach ($result->getErrors() as $err) {
+            $errors[] = sprintf(PHP_EOL.'- %s: %s (%s)', $err->getRecipient()->toString(), $err->getMessage(), $err->getCode());
+        }
+
+        return 'Unable to send an SMS for recipients:'.implode('', $errors);
+    }
+}
