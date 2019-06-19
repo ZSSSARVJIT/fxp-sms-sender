@@ -20,7 +20,7 @@ matrix:
 
 before_script:
     - composer self-update
-    - composer global require --prefer-source phpunit/phpunit:"^6.5.0" php-coveralls/php-coveralls:^2.1.0
+    - composer global require --prefer-source phpunit/phpunit:"^7.5.0" php-coveralls/php-coveralls:^2.1.0
     - composer install --prefer-source
     - mkdir -p ./build/logs
 
