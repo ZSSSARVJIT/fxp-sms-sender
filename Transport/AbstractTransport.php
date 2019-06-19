@@ -42,12 +42,12 @@ abstract class AbstractTransport implements TransportInterface
     private $logger;
 
     /**
-     * @var int
+     * @var float
      */
-    private $rate = 0;
+    private $rate = 0.0;
 
     /**
-     * @var int
+     * @var int|double
      */
     private $lastSent = 0;
 
@@ -134,7 +134,7 @@ abstract class AbstractTransport implements TransportInterface
      */
     private function checkThrottling(): void
     {
-        if (0.0 === (float) $this->rate) {
+        if (0.0 ===  $this->rate) {
             return;
         }
 
