@@ -11,6 +11,7 @@
 
 namespace Fxp\Component\SmsSender;
 
+use Fxp\Component\SmsSender\Bridge\Amazon;
 use Fxp\Component\SmsSender\Exception\InvalidArgumentException;
 use Fxp\Component\SmsSender\Exception\LogicException;
 use Fxp\Component\SmsSender\Transport\TransportInterface;
@@ -122,5 +123,36 @@ class Transport
         }
 
         return new Transport\NullTransport($dispatcher, $logger);
+    }
+
+    /**
+     * Create the Amazon SNS transport.
+     *
+     * @param array                         $parsedDsn  The parsed dsn
+     * @param null|EventDispatcherInterface $dispatcher The event dispatcher
+     * @param null|LoggerInterface          $logger     The logger
+     * @param null|HttpClientInterface      $client     The custom http client
+     *
+     * @return TransportInterface
+     */
+    protected static function createSnsTransport(
+        array $parsedDsn,
+        EventDispatcherInterface $dispatcher = null,
+        LoggerInterface $logger = null,
+        HttpClientInterface $client = null
+    ): TransportInterface {
+        TransportUtil::validateInstall(Amazon\SmsTransport::class, 'Amazon SNS', 'fxp/amazon-sms-sender');
+        parse_str($parsedDsn['query'] ?? '', $query);
+
+        return new Amazon\SmsTransport(
+            urldecode($parsedDsn['user'] ?? ''),
+            urldecode($parsedDsn['pass'] ?? ''),
+            $query['region'] ?? null,
+            $query['sender_id'] ?? null,
+            $query['type'] ?? null,
+            $dispatcher,
+            $client,
+            $logger
+        );
     }
 }

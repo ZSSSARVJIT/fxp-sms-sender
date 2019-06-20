@@ -11,6 +11,7 @@
 
 namespace Fxp\Component\SmsSender\Tests;
 
+use Fxp\Component\SmsSender\Bridge\Amazon;
 use Fxp\Component\SmsSender\Exception\InvalidArgumentException;
 use Fxp\Component\SmsSender\Exception\LogicException;
 use Fxp\Component\SmsSender\Transport;
@@ -63,6 +64,23 @@ final class TransportTest extends TestCase
         $this->validateDispatcher($transport);
     }
 
+    public function testFromDsnNullWithInvalidScheme(): void
+    {
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('The "api" scheme is not supported for SMS Sender "null".');
+
+        Transport::fromDsn('api://null', $this->dispatcher, $this->httpClient, $this->logger);
+    }
+
+    public function testFromDsnAmazon(): void
+    {
+        $dsn = 'api://access_key:secret_key@sns?region=region&sender_id=SenderId&type=Transactional';
+        $transport = Transport::fromDsn($dsn, $this->dispatcher, $this->httpClient, $this->logger);
+
+        static::assertInstanceOf(Amazon\SmsTransport::class, $transport);
+        $this->validateDispatcher($transport);
+    }
+
     public function testFromDsnFailover(): void
     {
         $transport = Transport::fromDsn('sms://null || sms://null', $this->dispatcher, $this->httpClient, $this->logger);
@@ -97,14 +115,6 @@ final class TransportTest extends TestCase
         $this->expectExceptionMessage('The "foobar" SMS Sender is not supported.');
 
         Transport::fromDsn('sms://foobar');
-    }
-
-    public function testFromDsnNullWithInvalidScheme(): void
-    {
-        $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('The "api" scheme is not supported for SMS Sender "null".');
-
-        Transport::fromDsn('api://null', $this->dispatcher, $this->httpClient, $this->logger);
     }
 
     private function validateDispatcher(Transport\TransportInterface $transport): void
