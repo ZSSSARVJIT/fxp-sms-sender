@@ -13,8 +13,6 @@ namespace Fxp\Component\SmsSender;
 
 use Fxp\Component\SmsSender\Exception\InvalidArgumentException;
 use Fxp\Component\SmsSender\Exception\LogicException;
-use Fxp\Component\SmsSender\Transport\FailoverTransport;
-use Fxp\Component\SmsSender\Transport\RoundRobinTransport;
 use Fxp\Component\SmsSender\Transport\TransportInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -35,8 +33,12 @@ class Transport
      *
      * @return TransportInterface
      */
-    public static function fromDsn(string $dsn, EventDispatcherInterface $dispatcher = null, HttpClientInterface $client = null, LoggerInterface $logger = null): TransportInterface
-    {
+    public static function fromDsn(
+        string $dsn,
+        EventDispatcherInterface $dispatcher = null,
+        HttpClientInterface $client = null,
+        LoggerInterface $logger = null
+    ): TransportInterface {
         // failover?
         $dsns = preg_split('/\s++\|\|\s++/', $dsn);
 
@@ -47,7 +49,7 @@ class Transport
                 $transports[] = self::createTransport($sDsn, $dispatcher, $client, $logger);
             }
 
-            return new FailoverTransport($transports);
+            return new Transport\FailoverTransport($transports);
         }
 
         // round robin?
@@ -60,7 +62,7 @@ class Transport
                 $transports[] = self::createTransport($sDsn, $dispatcher, $client, $logger);
             }
 
-            return new RoundRobinTransport($transports);
+            return new Transport\RoundRobinTransport($transports);
         }
 
         return self::createTransport($dsn, $dispatcher, $client, $logger);
@@ -71,13 +73,17 @@ class Transport
      *
      * @param string                        $dsn        The DSN to build the transport
      * @param null|EventDispatcherInterface $dispatcher The event dispatcher
-     * @param null|HttpClientInterface      $client     The custom http client
      * @param null|LoggerInterface          $logger     The logger
+     * @param null|HttpClientInterface      $client     The custom http client
      *
      * @return TransportInterface
      */
-    private static function createTransport(string $dsn, EventDispatcherInterface $dispatcher = null, HttpClientInterface $client = null, LoggerInterface $logger = null): TransportInterface
-    {
+    protected static function createTransport(
+        string $dsn,
+        EventDispatcherInterface $dispatcher = null,
+        HttpClientInterface $client = null,
+        LoggerInterface $logger = null
+    ): TransportInterface {
         if (false === $parsedDsn = parse_url($dsn)) {
             throw new InvalidArgumentException(sprintf('The "%s" SMS Sender DSN is invalid.', $dsn));
         }
@@ -86,18 +92,35 @@ class Transport
             throw new InvalidArgumentException(sprintf('The "%s" SMS Sender DSN must contain a sender name.', $dsn));
         }
 
-        $user = urldecode($parsedDsn['user'] ?? '');
-        $pass = urldecode($parsedDsn['pass'] ?? '');
-        parse_str($parsedDsn['query'] ?? '', $query);
+        $method = 'create'.ucfirst($parsedDsn['host']).'Transport';
 
-        if ('null' === $parsedDsn['host']) {
-            if ('sms' !== $parsedDsn['scheme']) {
-                throw new LogicException(sprintf('The "%s" scheme is not supported for SMS Sender "%s".', $parsedDsn['scheme'], $parsedDsn['host']));
-            }
+        if (method_exists(static::class, $method)) {
+            $call = static::class.'::'.$method;
 
-            return new Transport\NullTransport($dispatcher, $logger);
+            return $call($parsedDsn, $dispatcher, $logger, $client);
         }
 
         throw new LogicException(sprintf('The "%s" SMS Sender is not supported.', $parsedDsn['host']));
+    }
+
+    /**
+     * Create the Null transport.
+     *
+     * @param array                         $parsedDsn  The parsed dsn
+     * @param null|EventDispatcherInterface $dispatcher The event dispatcher
+     * @param null|LoggerInterface          $logger     The logger
+     *
+     * @return TransportInterface
+     */
+    protected static function createNullTransport(
+        array $parsedDsn,
+        EventDispatcherInterface $dispatcher = null,
+        LoggerInterface $logger = null
+    ): TransportInterface {
+        if ('sms' !== $parsedDsn['scheme']) {
+            throw new LogicException(sprintf('The "%s" scheme is not supported for SMS Sender "%s".', $parsedDsn['scheme'], $parsedDsn['host']));
+        }
+
+        return new Transport\NullTransport($dispatcher, $logger);
     }
 }
