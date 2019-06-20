@@ -21,6 +21,7 @@ Features include:
 - Available 3rd party transports:
   - Amazon AWS with [Fxp Amazon SMS Sender](https://github.com/fxpio/fxp-amazon-sms-sender)
   - Twilio with [Fxp Twilio SMS Sender](https://github.com/fxpio/fxp-twilio-sms-sender)
+- Render the SMS body with the Twig template with [Fxp Twig SMS Sender](https://github.com/fxpio/fxp-twig-sms-sender)
 
 Documentation
 -------------
