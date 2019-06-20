@@ -15,9 +15,9 @@ Features include:
 
 - Create simply a SMS message like an email for Symfony Mailer
 - Available transports:
- - Null transport (to not really send the SMS)
- - Failover transport
- - Round Robin transport
+  - Null transport (to not really send the SMS)
+  - Failover transport
+  - Round Robin transport
 - Available 3rd party transports:
   - Amazon AWS with [Fxp Amazon SMS Sender](https://github.com/fxpio/fxp-amazon-sms-sender)
   - Twilio with [Fxp Twilio SMS Sender](https://github.com/fxpio/fxp-twilio-sms-sender)
