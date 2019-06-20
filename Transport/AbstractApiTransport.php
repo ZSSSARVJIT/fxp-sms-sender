@@ -18,7 +18,7 @@ use Fxp\Component\SmsSender\Mime\Sms;
 use Fxp\Component\SmsSender\SentMessage;
 use Fxp\Component\SmsSender\SmsEnvelope;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
