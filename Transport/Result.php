@@ -36,18 +36,28 @@ class Result
     /**
      * Constructor.
      *
-     * @param string $transportClassName
+     * @param string $transportClassName The class name of the transport
      */
     public function __construct(string $transportClassName)
     {
         $this->transportClassName = $transportClassName;
     }
 
+    /**
+     * Get the class name of the transport.
+     *
+     * @return string
+     */
     public function getTransportClassName(): string
     {
         return $this->transportClassName;
     }
 
+    /**
+     * Add the result item.
+     *
+     * @param AbstractResultItem|ErrorResult|SuccessResult $result The result item
+     */
     public function add(AbstractResultItem $result): void
     {
         if ($result instanceof SuccessResult) {
@@ -58,6 +68,8 @@ class Result
     }
 
     /**
+     * Get the success items.
+     *
      * @return SuccessResult[]
      */
     public function getSuccesses(): array
@@ -65,12 +77,19 @@ class Result
         return $this->successes;
     }
 
+    /**
+     * Check if the result has errors.
+     *
+     * @return bool
+     */
     public function hasErrors(): bool
     {
         return !empty($this->errors);
     }
 
     /**
+     * Get the error items.
+     *
      * @return ErrorResult[]
      */
     public function getErrors(): array

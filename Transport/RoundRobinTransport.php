@@ -47,8 +47,8 @@ class RoundRobinTransport implements TransportInterface
     /**
      * Constructor.
      *
-     * @param TransportInterface[] $transports
-     * @param int                  $retryPeriod
+     * @param TransportInterface[] $transports  The transports
+     * @param int                  $retryPeriod The retry period
      */
     public function __construct(array $transports, int $retryPeriod = 60)
     {
@@ -61,6 +61,9 @@ class RoundRobinTransport implements TransportInterface
         $this->retryPeriod = $retryPeriod;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function send(RawMessage $message, SmsEnvelope $envelope = null): ?SentMessage
     {
         while ($transport = $this->getNextTransport()) {
@@ -76,6 +79,8 @@ class RoundRobinTransport implements TransportInterface
 
     /**
      * Rotates the transport list around and returns the first instance.
+     *
+     * @return null|TransportInterface
      */
     protected function getNextTransport(): ?TransportInterface
     {
@@ -105,11 +110,25 @@ class RoundRobinTransport implements TransportInterface
         return $transport;
     }
 
+    /**
+     * Check if the transport is dead.
+     *
+     * @param TransportInterface $transport The transport
+     *
+     * @return bool
+     */
     protected function isTransportDead(TransportInterface $transport): bool
     {
         return $this->deadTransports->contains($transport);
     }
 
+    /**
+     * Move the cursor on the next transport, or the first transport if all transports are tested.
+     *
+     * @param int $cursor The cursor position
+     *
+     * @return int
+     */
     private function moveCursor(int $cursor): int
     {
         return ++$cursor >= \count($this->transports) ? 0 : $cursor;

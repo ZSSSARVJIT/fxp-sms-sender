@@ -24,7 +24,9 @@ use Symfony\Component\Mime\Part\TextPart;
 class Sms extends Message
 {
     /**
-     * @param Phone|string $phone
+     * Add the from phone.
+     *
+     * @param Phone|string $phone The phone
      *
      * @return static
      */
@@ -34,6 +36,8 @@ class Sms extends Message
     }
 
     /**
+     * Define if the from phone is optional by the transport.
+     *
      * @return static
      */
     public function optionalFrom(): self
@@ -42,6 +46,8 @@ class Sms extends Message
     }
 
     /**
+     * Get the from phone.
+     *
      * @return null|Phone
      */
     public function getFrom(): ?Phone
@@ -50,7 +56,9 @@ class Sms extends Message
     }
 
     /**
-     * @param Phone|Phone[]|string|string[] $phones
+     * Add the to phones.
+     *
+     * @param Phone|Phone[]|string|string[] $phones The phones
      *
      * @return static
      */
@@ -60,6 +68,8 @@ class Sms extends Message
     }
 
     /**
+     * Set or replace the to phones.
+     *
      * @param Phone|Phone[]|string|string[] $phones
      *
      * @return static
@@ -70,6 +80,8 @@ class Sms extends Message
     }
 
     /**
+     * Get the to phones.
+     *
      * @return Phone[]
      */
     public function getTo(): array
@@ -78,7 +90,9 @@ class Sms extends Message
     }
 
     /**
-     * @param string $body
+     * Set the text.
+     *
+     * @param string $body The text
      *
      * @return static
      */
@@ -89,6 +103,11 @@ class Sms extends Message
         return $this;
     }
 
+    /**
+     * Get the text.
+     *
+     * @return null|string
+     */
     public function getText(): ?string
     {
         $body = $this->getBody();
@@ -97,7 +116,9 @@ class Sms extends Message
     }
 
     /**
-     * @param HeaderInterface $header
+     * Add the header.
+     *
+     * @param HeaderInterface $header The header
      *
      * @return static
      */
@@ -109,8 +130,10 @@ class Sms extends Message
     }
 
     /**
-     * @param string           $name
-     * @param Phone[]|string[] $phones
+     * Add the phones in the header.
+     *
+     * @param string           $name   The header name
+     * @param Phone[]|string[] $phones The phones
      *
      * @return static
      */
@@ -127,8 +150,10 @@ class Sms extends Message
     }
 
     /**
-     * @param string           $name
-     * @param Phone[]|string[] $phones
+     * Set or replace the phones in the header.
+     *
+     * @param string           $name   The header name
+     * @param Phone[]|string[] $phones The phones
      *
      * @return static
      */
@@ -148,7 +173,9 @@ class Sms extends Message
     }
 
     /**
-     * @param string $name
+     * Get the phones from the header.
+     *
+     * @param string $name The header name
      *
      * @return Phone[]
      */
@@ -170,6 +197,13 @@ class Sms extends Message
         return $phones;
     }
 
+    /**
+     * Get the phone form the header.
+     *
+     * @param string $name The header name
+     *
+     * @return null|Phone
+     */
     private function getPhoneFromListHeader(string $name): ?Phone
     {
         $phones = $this->getPhonesFromListHeader($name);

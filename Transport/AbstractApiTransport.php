@@ -33,6 +33,13 @@ abstract class AbstractApiTransport extends AbstractTransport
      */
     protected $client;
 
+    /**
+     * Constructor.
+     *
+     * @param null|HttpClientInterface      $client     The http client
+     * @param null|EventDispatcherInterface $dispatcher The event dispatcher
+     * @param null|LoggerInterface          $logger     The logger
+     */
     public function __construct(
         HttpClientInterface $client = null,
         EventDispatcherInterface $dispatcher = null,
@@ -43,6 +50,9 @@ abstract class AbstractApiTransport extends AbstractTransport
         $this->client = $client;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function doSend(SentMessage $message): void
     {
         try {
@@ -62,5 +72,14 @@ abstract class AbstractApiTransport extends AbstractTransport
         }
     }
 
+    /**
+     * Action to send the SMS.
+     *
+     * @param Sms         $sms      The SMS message
+     * @param SmsEnvelope $envelope The SMS envelope
+     * @param Result      $result   The result wrapper
+     *
+     * @throws
+     */
     abstract protected function doSendSms(Sms $sms, SmsEnvelope $envelope, Result $result): void;
 }

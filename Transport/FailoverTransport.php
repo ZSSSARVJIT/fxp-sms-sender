@@ -18,8 +18,14 @@ namespace Fxp\Component\SmsSender\Transport;
  */
 class FailoverTransport extends RoundRobinTransport
 {
+    /**
+     * @var null|TransportInterface
+     */
     private $currentTransport;
 
+    /**
+     * {@inheritdoc}
+     */
     protected function getNextTransport(): ?TransportInterface
     {
         if (null === $this->currentTransport || $this->isTransportDead($this->currentTransport)) {

@@ -45,7 +45,7 @@ class DelayedSmsEnvelope extends SmsEnvelope
     /**
      * Constructor.
      *
-     * @param Message|RawMessage $message
+     * @param Message|RawMessage $message The message
      */
     public function __construct(RawMessage $message)
     {
@@ -60,6 +60,9 @@ class DelayedSmsEnvelope extends SmsEnvelope
         $this->message = $message;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setFrom(Phone $from): void
     {
         parent::setFrom($from);
@@ -67,6 +70,9 @@ class DelayedSmsEnvelope extends SmsEnvelope
         $this->senderSet = true;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getFrom(): Phone
     {
         if ($this->senderSet) {
@@ -80,6 +86,9 @@ class DelayedSmsEnvelope extends SmsEnvelope
         throw new LogicException('Unable to determine the sender of the message.');
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setRecipients(array $recipients): void
     {
         parent::setRecipients($recipients);
@@ -88,7 +97,7 @@ class DelayedSmsEnvelope extends SmsEnvelope
     }
 
     /**
-     * @return Phone[]
+     * {@inheritdoc}
      */
     public function getRecipients(): array
     {
@@ -99,6 +108,13 @@ class DelayedSmsEnvelope extends SmsEnvelope
         return self::getRecipientsFromHeaders($this->message->getHeaders());
     }
 
+    /**
+     * Get the recipient phones from the message header.
+     *
+     * @param Headers $headers The message headers
+     *
+     * @return Phone[]
+     */
     private static function getRecipientsFromHeaders(Headers $headers): array
     {
         $recipients = [];

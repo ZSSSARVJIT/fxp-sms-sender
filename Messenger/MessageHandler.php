@@ -18,13 +18,26 @@ use Fxp\Component\SmsSender\Transport\TransportInterface;
  */
 class MessageHandler
 {
+    /**
+     * @var TransportInterface
+     */
     private $transport;
 
+    /**
+     * Constructor.
+     *
+     * @param TransportInterface $transport The SMS transport
+     */
     public function __construct(TransportInterface $transport)
     {
         $this->transport = $transport;
     }
 
+    /**
+     * Call the handler.
+     *
+     * @param SendSmsMessage $message The send message
+     */
     public function __invoke(SendSmsMessage $message): void
     {
         $this->transport->send($message->getMessage(), $message->getEnvelope());

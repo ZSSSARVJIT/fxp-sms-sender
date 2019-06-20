@@ -33,8 +33,8 @@ abstract class AbstractMessageEvent extends Event
     /**
      * Constructor.
      *
-     * @param RawMessage  $message
-     * @param SmsEnvelope $envelope
+     * @param RawMessage  $message  The message
+     * @param SmsEnvelope $envelope The envelope
      */
     public function __construct(RawMessage $message, SmsEnvelope $envelope)
     {
@@ -42,21 +42,41 @@ abstract class AbstractMessageEvent extends Event
         $this->envelope = $envelope;
     }
 
+    /**
+     * Get the message.
+     *
+     * @return RawMessage
+     */
     public function getMessage(): RawMessage
     {
         return $this->message;
     }
 
+    /**
+     * Set the message.
+     *
+     * @param RawMessage $message The message
+     */
     public function setMessage(RawMessage $message): void
     {
         $this->message = $message;
     }
 
+    /**
+     * Get the envelope.
+     *
+     * @return SmsEnvelope
+     */
     public function getEnvelope(): SmsEnvelope
     {
         return $this->envelope;
     }
 
+    /**
+     * Set the envelope.
+     *
+     * @param SmsEnvelope $envelope The envelope
+     */
     public function setEnvelope(SmsEnvelope $envelope): void
     {
         $this->envelope = $envelope;

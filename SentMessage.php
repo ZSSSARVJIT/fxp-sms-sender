@@ -45,9 +45,9 @@ class SentMessage
     /**
      * Constructor.
      *
-     * @param RawMessage  $message
-     * @param SmsEnvelope $envelope
-     * @param Result      $result
+     * @param RawMessage  $message  The message
+     * @param SmsEnvelope $envelope The envelope
+     * @param Result      $result   The result wrapper for transport
      */
     public function __construct(RawMessage $message, SmsEnvelope $envelope, Result $result)
     {
@@ -57,31 +57,61 @@ class SentMessage
         $this->result = $result;
     }
 
+    /**
+     * Get the message.
+     *
+     * @return RawMessage
+     */
     public function getMessage(): RawMessage
     {
         return $this->raw;
     }
 
+    /**
+     * Get the original message.
+     *
+     * @return RawMessage
+     */
     public function getOriginalMessage(): RawMessage
     {
         return $this->original;
     }
 
+    /**
+     * Get the envelope.
+     *
+     * @return SmsEnvelope
+     */
     public function getEnvelope(): SmsEnvelope
     {
         return $this->envelope;
     }
 
+    /**
+     * Convert the message into a string.
+     *
+     * @return string
+     */
     public function toString(): string
     {
         return $this->raw->toString();
     }
 
+    /**
+     * Convert the message to iterable parts.
+     *
+     * @return iterable
+     */
     public function toIterable(): iterable
     {
         return $this->raw->toIterable();
     }
 
+    /**
+     * Get the transport result.
+     *
+     * @return Result
+     */
     public function getResult(): Result
     {
         return $this->result;

@@ -34,8 +34,8 @@ class SmsEnvelope
     /**
      * Constructor.
      *
-     * @param Phone   $from
-     * @param Phone[] $recipients
+     * @param Phone   $from       The from phone
+     * @param Phone[] $recipients The recipient phones
      */
     public function __construct(Phone $from, array $recipients)
     {
@@ -43,16 +43,31 @@ class SmsEnvelope
         $this->setRecipients($recipients);
     }
 
+    /**
+     * Set the from phone.
+     *
+     * @param Phone $from The from phone
+     */
     public function setFrom(Phone $from): void
     {
         $this->from = $from;
     }
 
+    /**
+     * Get the from phone.
+     *
+     * @return Phone
+     */
     public function getFrom(): Phone
     {
         return $this->from;
     }
 
+    /**
+     * Set the recipient phones.
+     *
+     * @param array $recipients The recipient phones
+     */
     public function setRecipients(array $recipients): void
     {
         $this->recipients = [];
@@ -67,6 +82,8 @@ class SmsEnvelope
     }
 
     /**
+     * Get the recipient phones.
+     *
      * @return Phone[]
      */
     public function getRecipients(): array

@@ -28,9 +28,9 @@ class MessageResultEvent extends AbstractMessageEvent
     /**
      * Constructor.
      *
-     * @param RawMessage  $message
-     * @param SmsEnvelope $envelope
-     * @param Result      $result
+     * @param RawMessage  $message  The message
+     * @param SmsEnvelope $envelope The envelope
+     * @param Result      $result   The result
      */
     public function __construct(RawMessage $message, SmsEnvelope $envelope, Result $result)
     {
@@ -39,6 +39,11 @@ class MessageResultEvent extends AbstractMessageEvent
         $this->result = $result;
     }
 
+    /**
+     * Get the result.
+     *
+     * @return Result
+     */
     public function getResult(): Result
     {
         return $this->result;

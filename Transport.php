@@ -25,6 +25,16 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class Transport
 {
+    /**
+     * Create the transport form the DSN and include the failover or round robin logic if necessary.
+     *
+     * @param string                        $dsn        The DSN to build the transport
+     * @param null|EventDispatcherInterface $dispatcher The event dispatcher
+     * @param null|HttpClientInterface      $client     The custom http client
+     * @param null|LoggerInterface          $logger     The logger
+     *
+     * @return TransportInterface
+     */
     public static function fromDsn(string $dsn, EventDispatcherInterface $dispatcher = null, HttpClientInterface $client = null, LoggerInterface $logger = null): TransportInterface
     {
         // failover?
@@ -56,6 +66,16 @@ class Transport
         return self::createTransport($dsn, $dispatcher, $client, $logger);
     }
 
+    /**
+     * Create the transport from the DSN.
+     *
+     * @param string                        $dsn        The DSN to build the transport
+     * @param null|EventDispatcherInterface $dispatcher The event dispatcher
+     * @param null|HttpClientInterface      $client     The custom http client
+     * @param null|LoggerInterface          $logger     The logger
+     *
+     * @return TransportInterface
+     */
     private static function createTransport(string $dsn, EventDispatcherInterface $dispatcher = null, HttpClientInterface $client = null, LoggerInterface $logger = null): TransportInterface
     {
         if (false === $parsedDsn = parse_url($dsn)) {

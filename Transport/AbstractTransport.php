@@ -47,10 +47,16 @@ abstract class AbstractTransport implements TransportInterface
     private $rate = 0.0;
 
     /**
-     * @var int|double
+     * @var float|int
      */
     private $lastSent = 0;
 
+    /**
+     * Constructor.
+     *
+     * @param null|EventDispatcherInterface $dispatcher The event dispatcher
+     * @param null|LoggerInterface          $logger     The logger
+     */
     public function __construct(EventDispatcherInterface $dispatcher = null, LoggerInterface $logger = null)
     {
         $this->dispatcher = $dispatcher ?: new EventDispatcher();
@@ -117,6 +123,11 @@ abstract class AbstractTransport implements TransportInterface
         return $sentMessage;
     }
 
+    /**
+     * Action to send the message.
+     *
+     * @param SentMessage $message The message
+     */
     abstract protected function doSend(SentMessage $message): void;
 
     /**
@@ -134,7 +145,7 @@ abstract class AbstractTransport implements TransportInterface
      */
     private function checkThrottling(): void
     {
-        if (0.0 ===  $this->rate) {
+        if (0.0 === $this->rate) {
             return;
         }
 

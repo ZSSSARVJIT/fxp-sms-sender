@@ -23,9 +23,22 @@ use Symfony\Component\Mime\RawMessage;
  */
 class SmsSender implements SmsSenderInterface
 {
+    /**
+     * @var TransportInterface
+     */
     private $transport;
+
+    /**
+     * @var null|MessageBusInterface
+     */
     private $bus;
 
+    /**
+     * Constructor.
+     *
+     * @param TransportInterface       $transport The transport
+     * @param null|MessageBusInterface $bus       The message bus
+     */
     public function __construct(TransportInterface $transport, MessageBusInterface $bus = null)
     {
         $this->transport = $transport;

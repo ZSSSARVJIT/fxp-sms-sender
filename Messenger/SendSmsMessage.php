@@ -34,10 +34,8 @@ class SendSmsMessage
     /**
      * Constructor.
      *
-     * @param RawMessage       $message
-     * @param null|SmsEnvelope $envelope
-     *
-     * @internal
+     * @param RawMessage       $message  The message
+     * @param null|SmsEnvelope $envelope The envelope
      */
     public function __construct(RawMessage $message, SmsEnvelope $envelope = null)
     {
@@ -45,11 +43,21 @@ class SendSmsMessage
         $this->envelope = $envelope;
     }
 
+    /**
+     * Get the message.
+     *
+     * @return RawMessage
+     */
     public function getMessage(): RawMessage
     {
         return $this->message;
     }
 
+    /**
+     * Get the envelope.
+     *
+     * @return null|SmsEnvelope
+     */
     public function getEnvelope(): ?SmsEnvelope
     {
         return $this->envelope;

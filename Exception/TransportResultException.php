@@ -25,6 +25,12 @@ class TransportResultException extends RuntimeException implements TransportExce
      */
     private $result;
 
+    /**
+     * Constructor.
+     *
+     * @param Result $result The result
+     * @param int    $code   The exception code
+     */
     public function __construct(Result $result, $code = 0)
     {
         parent::__construct($this->buildMessage($result), $code);
@@ -32,11 +38,23 @@ class TransportResultException extends RuntimeException implements TransportExce
         $this->result = $result;
     }
 
+    /**
+     * Get the transport result.
+     *
+     * @return Result
+     */
     public function getResult(): Result
     {
         return $this->result;
     }
 
+    /**
+     * Build the exception message.
+     *
+     * @param Result $result The transport result
+     *
+     * @return string
+     */
     private function buildMessage(Result $result): string
     {
         $errors = [];

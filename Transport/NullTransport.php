@@ -20,6 +20,9 @@ use Fxp\Component\SmsSender\SentMessage;
  */
 final class NullTransport extends AbstractTransport
 {
+    /**
+     * {@inheritdoc}
+     */
     protected function doSend(SentMessage $message): void
     {
     }

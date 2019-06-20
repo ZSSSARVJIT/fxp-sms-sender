@@ -27,6 +27,9 @@ use Symfony\Component\Mime\Encoder\IdnAddressEncoder;
  */
 class Phone extends Address
 {
+    /**
+     * @var string
+     */
     public static $encoderClass = PhoneNumberUtil::class;
 
     /**
@@ -47,7 +50,7 @@ class Phone extends Address
     /**
      * Constructor.
      *
-     * @param string $phone
+     * @param string $phone The phone
      */
     public function __construct(string $phone)
     {
@@ -68,17 +71,29 @@ class Phone extends Address
         $this->phone = $phone;
     }
 
+    /**
+     * Get the phone.
+     *
+     * @return string
+     */
     public function getPhone(): string
     {
         return $this->phone;
     }
 
+    /**
+     * Convert the phone into a string.
+     *
+     * @return string
+     */
     public function toString(): string
     {
         return $this->getEncodedPhone();
     }
 
     /**
+     * Get the encoded phone.
+     *
      * @throws
      *
      * @return string
@@ -88,11 +103,17 @@ class Phone extends Address
         return self::$phoneEncoder->format(self::$phoneEncoder->parse($this->phone), PhoneNumberFormat::E164);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getAddress(): string
     {
         return $this->getEncodedPhone().'@carrier';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getEncodedAddress(): string
     {
         if (null === self::$addressEncoder) {
@@ -103,7 +124,9 @@ class Phone extends Address
     }
 
     /**
-     * @param Phone|string $phone
+     * Create the phone instance.
+     *
+     * @param Phone|string $phone The phone
      *
      * @return static
      */
@@ -125,7 +148,9 @@ class Phone extends Address
     }
 
     /**
-     * @param Phone[]|string[] $phones
+     * Create the phone instances.
+     *
+     * @param Phone[]|string[] $phones The phones
      *
      * @return static[]
      */

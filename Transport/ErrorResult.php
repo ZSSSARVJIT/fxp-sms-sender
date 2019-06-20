@@ -35,6 +35,15 @@ class ErrorResult extends AbstractResultItem
      */
     private $exception;
 
+    /**
+     * Constructor.
+     *
+     * @param Phone           $recipient The recipient
+     * @param string          $message   The error message
+     * @param string          $code      The error code
+     * @param array           $data      The error data
+     * @param null|\Exception $exception The exception
+     */
     public function __construct(
         Phone $recipient,
         string $message,
@@ -49,16 +58,31 @@ class ErrorResult extends AbstractResultItem
         $this->exception = $exception;
     }
 
+    /**
+     * Get the error message.
+     *
+     * @return string
+     */
     public function getMessage(): string
     {
         return $this->message;
     }
 
+    /**
+     * Get the error data.
+     *
+     * @return string
+     */
     public function getCode(): string
     {
         return $this->code;
     }
 
+    /**
+     * Get the exception.
+     *
+     * @return null|\Exception
+     */
     public function getException(): ?\Exception
     {
         return $this->exception;

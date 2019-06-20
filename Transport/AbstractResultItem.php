@@ -30,17 +30,33 @@ abstract class AbstractResultItem
      */
     protected $data;
 
+    /**
+     * Constructor.
+     *
+     * @param Phone $recipient The recipient
+     * @param array $data      The data
+     */
     public function __construct(Phone $recipient, array $data)
     {
         $this->recipient = $recipient;
         $this->data = $data;
     }
 
+    /**
+     * Get the recipient.
+     *
+     * @return Phone
+     */
     public function getRecipient(): Phone
     {
         return $this->recipient;
     }
 
+    /**
+     * Get the data.
+     *
+     * @return array
+     */
     public function getData(): array
     {
         return $this->data;
