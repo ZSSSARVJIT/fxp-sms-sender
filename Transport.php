@@ -12,6 +12,7 @@
 namespace Fxp\Component\SmsSender;
 
 use Fxp\Component\SmsSender\Bridge\Amazon;
+use Fxp\Component\SmsSender\Bridge\Twilio;
 use Fxp\Component\SmsSender\Exception\InvalidArgumentException;
 use Fxp\Component\SmsSender\Exception\LogicException;
 use Fxp\Component\SmsSender\Transport\TransportInterface;
@@ -150,6 +151,36 @@ class Transport
             $query['region'] ?? null,
             $query['sender_id'] ?? null,
             $query['type'] ?? null,
+            $dispatcher,
+            $client,
+            $logger
+        );
+    }
+
+    /**
+     * Create the Twilio transport.
+     *
+     * @param array                         $parsedDsn  The parsed dsn
+     * @param null|EventDispatcherInterface $dispatcher The event dispatcher
+     * @param null|LoggerInterface          $logger     The logger
+     * @param null|HttpClientInterface      $client     The custom http client
+     *
+     * @return TransportInterface
+     */
+    protected static function createTwilioTransport(
+        array $parsedDsn,
+        EventDispatcherInterface $dispatcher = null,
+        LoggerInterface $logger = null,
+        HttpClientInterface $client = null
+    ): TransportInterface {
+        TransportUtil::validateInstall(Twilio\SmsTransport::class, 'Twilio', 'fxp/twilio-sms-sender');
+        parse_str($parsedDsn['query'] ?? '', $query);
+
+        return new Twilio\SmsTransport(
+            urldecode($parsedDsn['user'] ?? ''),
+            urldecode($parsedDsn['pass'] ?? ''),
+            $query['accountSid'] ?? null,
+            $query['region'] ?? null,
             $dispatcher,
             $client,
             $logger

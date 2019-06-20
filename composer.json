@@ -22,6 +22,7 @@
     },
     "require-dev": {
         "fxp/amazon-sms-sender": "^2.0.0",
+        "fxp/twilio-sms-sender": "^2.0.0",
         "symfony/http-client": "^4.3.0",
         "symfony/messenger": "^4.3.0"
     },

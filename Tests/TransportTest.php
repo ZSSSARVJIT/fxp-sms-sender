@@ -12,6 +12,7 @@
 namespace Fxp\Component\SmsSender\Tests;
 
 use Fxp\Component\SmsSender\Bridge\Amazon;
+use Fxp\Component\SmsSender\Bridge\Twilio;
 use Fxp\Component\SmsSender\Exception\InvalidArgumentException;
 use Fxp\Component\SmsSender\Exception\LogicException;
 use Fxp\Component\SmsSender\Transport;
@@ -78,6 +79,15 @@ final class TransportTest extends TestCase
         $transport = Transport::fromDsn($dsn, $this->dispatcher, $this->httpClient, $this->logger);
 
         static::assertInstanceOf(Amazon\SmsTransport::class, $transport);
+        $this->validateDispatcher($transport);
+    }
+
+    public function testFromDsnTwilio(): void
+    {
+        $dsn = 'api://account_id:token@twilio?region=region&accountSid=other_account_id';
+        $transport = Transport::fromDsn($dsn, $this->dispatcher, $this->httpClient, $this->logger);
+
+        static::assertInstanceOf(Twilio\SmsTransport::class, $transport);
         $this->validateDispatcher($transport);
     }
 

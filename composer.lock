@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a85922001d944d8596252fa1fd95a4d0",
+    "content-hash": "c7c1407dd5e978fb7f9af73a15c27ffd",
     "packages": [
         {
             "name": "giggsey/libphonenumber-for-php",
@@ -672,6 +672,59 @@
             "time": "2019-06-20T09:49:54+00:00"
         },
         {
+            "name": "fxp/twilio-sms-sender",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fxpio/fxp-twilio-sms-sender.git",
+                "reference": "645c7c75602d0c3b195517dc84ceae656e5621ae"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fxpio/fxp-twilio-sms-sender/zipball/645c7c75602d0c3b195517dc84ceae656e5621ae",
+                "reference": "645c7c75602d0c3b195517dc84ceae656e5621ae",
+                "shasum": ""
+            },
+            "require": {
+                "fxp/sms-sender": "^2.0.0",
+                "php": "^7.1.0",
+                "twilio/sdk": "^5.9.0"
+            },
+            "require-dev": {
+                "symfony/http-client": "^4.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Fxp\\Component\\SmsSender\\Bridge\\Twilio\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "François Pluchino",
+                    "email": "francois.pluchino@gmail.com"
+                }
+            ],
+            "description": "A bridge between Twilio and Fxp SMS Sender",
+            "homepage": "https://github.com/fxpio/fxp-twilio-sms-sender",
+            "keywords": [
+                "sms"
+            ],
+            "time": "2019-06-20T11:41:05+00:00"
+        },
+        {
             "name": "guzzlehttp/guzzle",
             "version": "6.3.3",
             "source": {
@@ -1249,6 +1302,52 @@
                 "shim"
             ],
             "time": "2019-02-06T07:57:58+00:00"
+        },
+        {
+            "name": "twilio/sdk",
+            "version": "5.33.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/twilio/twilio-php.git",
+                "reference": "1d66ddc57259d1e828821d2d28a04cb4ae6f8438"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/1d66ddc57259d1e828821d2d28a04cb4ae6f8438",
+                "reference": "1d66ddc57259d1e828821d2d28a04cb4ae6f8438",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.0"
+            },
+            "require-dev": {
+                "apigen/apigen": "^4.1",
+                "phpunit/phpunit": "4.5.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Twilio\\": "Twilio/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Twilio API Team",
+                    "email": "api@twilio.com"
+                }
+            ],
+            "description": "A PHP wrapper for Twilio's API",
+            "homepage": "http://github.com/twilio/twilio-php",
+            "keywords": [
+                "api",
+                "sms",
+                "twilio"
+            ],
+            "time": "2019-06-12T19:23:52+00:00"
         }
     ],
     "aliases": [],
