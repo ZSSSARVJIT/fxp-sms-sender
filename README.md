@@ -20,7 +20,7 @@ Features include:
  - Round Robin transport
 - Available 3rd party transports:
   - Amazon AWS with [Fxp Amazon SMS Sender](https://github.com/fxpio/fxp-amazon-sms-sender)
-  - Twilio with [Fxp Amazon SMS Sender](https://github.com/fxpio/fxp-twilio-sms-sender)
+  - Twilio with [Fxp Twilio SMS Sender](https://github.com/fxpio/fxp-twilio-sms-sender)
 
 Documentation
 -------------
