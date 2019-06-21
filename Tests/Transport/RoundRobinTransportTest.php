@@ -137,6 +137,33 @@ final class RoundRobinTransportTest extends TestCase
         $this->assertTransports($transport, 1, []);
     }
 
+    public function getRequiredFromData(): array
+    {
+        return [
+            [true, true],
+            [false, false],
+        ];
+    }
+
+    /**
+     * @dataProvider getRequiredFromData
+     *
+     * @param bool $expectedValue
+     * @param bool $requiredFrom
+     */
+    public function testHasRequiredFrom(bool $expectedValue, bool $requiredFrom): void
+    {
+        $transport1 = $this->createMock(TransportInterface::class);
+        $transport1->expects(static::once())->method('hasRequiredFrom')->willReturn(false);
+
+        $transport2 = $this->createMock(TransportInterface::class);
+        $transport2->expects(static::once())->method('hasRequiredFrom')->willReturn($requiredFrom);
+
+        $transport = new RoundRobinTransport([$transport1, $transport2], 3);
+
+        static::assertSame($expectedValue, $transport->hasRequiredFrom());
+    }
+
     /**
      * @param RoundRobinTransport $transport
      * @param int                 $cursor

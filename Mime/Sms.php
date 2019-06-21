@@ -36,16 +36,6 @@ class Sms extends Message
     }
 
     /**
-     * Define if the from phone is optional by the transport.
-     *
-     * @return static
-     */
-    public function optionalFrom(): self
-    {
-        return $this->from('+100');
-    }
-
-    /**
      * Get the from phone.
      *
      * @return null|Phone

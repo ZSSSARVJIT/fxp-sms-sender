@@ -124,6 +124,14 @@ abstract class AbstractTransport implements TransportInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function hasRequiredFrom(): bool
+    {
+        return true;
+    }
+
+    /**
      * Action to send the message.
      *
      * @param SentMessage $message The message

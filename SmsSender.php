@@ -11,9 +11,11 @@
 
 namespace Fxp\Component\SmsSender;
 
+use Fxp\Component\SmsSender\Exception\TransportException;
 use Fxp\Component\SmsSender\Messenger\SendSmsMessage;
 use Fxp\Component\SmsSender\Transport\TransportInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Mime\Message;
 use Symfony\Component\Mime\RawMessage;
 
 /**
@@ -50,6 +52,10 @@ class SmsSender implements SmsSenderInterface
      */
     public function send(RawMessage $message, SmsEnvelope $envelope = null): void
     {
+        if ($message instanceof Message && $this->hasRequiredFrom() && !$message->getHeaders()->has('From')) {
+            throw new TransportException('The transport required the "From" information');
+        }
+
         if (null === $this->bus) {
             $this->transport->send($message, $envelope);
 
@@ -57,5 +63,13 @@ class SmsSender implements SmsSenderInterface
         }
 
         $this->bus->dispatch(new SendSmsMessage($message, $envelope));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasRequiredFrom(): bool
+    {
+        return $this->transport->hasRequiredFrom();
     }
 }

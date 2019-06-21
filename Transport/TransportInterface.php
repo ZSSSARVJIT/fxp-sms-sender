@@ -34,4 +34,11 @@ interface TransportInterface
      * @return null|SentMessage
      */
     public function send(RawMessage $message, SmsEnvelope $envelope = null): ?SentMessage;
+
+    /**
+     * Check if the from phone is required.
+     *
+     * @return bool
+     */
+    public function hasRequiredFrom(): bool;
 }

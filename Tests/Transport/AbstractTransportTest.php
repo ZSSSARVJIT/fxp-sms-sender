@@ -113,4 +113,14 @@ final class AbstractTransportTest extends TestCase
 
         $transport->send($message);
     }
+
+    /**
+     * @throws
+     */
+    public function testHasRequiredFrom(): void
+    {
+        $transport = $this->getMockForAbstractClass(AbstractTransport::class);
+
+        static::assertTrue($transport->hasRequiredFrom());
+    }
 }

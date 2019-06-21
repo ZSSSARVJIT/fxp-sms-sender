@@ -32,14 +32,6 @@ final class SmsTest extends TestCase
         static::assertInstanceOf(Phone::class, $sms->getFrom());
     }
 
-    public function testOptionalFrom(): void
-    {
-        $sms = new Sms();
-        $sms->optionalFrom();
-
-        static::assertInstanceOf(Phone::class, $sms->getFrom());
-    }
-
     public function testTo(): void
     {
         $sms = new Sms();

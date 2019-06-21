@@ -11,6 +11,7 @@
 
 namespace Fxp\Component\SmsSender\Tests;
 
+use Fxp\Component\SmsSender\Exception\TransportException;
 use Fxp\Component\SmsSender\Mime\Phone;
 use Fxp\Component\SmsSender\SmsEnvelope;
 use Fxp\Component\SmsSender\SmsSender;
@@ -19,6 +20,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Mime\Message;
 use Symfony\Component\Mime\RawMessage;
 
 /**
@@ -69,5 +71,33 @@ final class SmsSenderTest extends TestCase
         $sender->send($message, $envelope);
 
         static::assertInstanceOf(Envelope::class, $busEnvelope);
+    }
+
+    public function testHasRequiredFrom(): void
+    {
+        /** @var MockObject|TransportInterface $transport */
+        $transport = $this->getMockBuilder(TransportInterface::class)->getMock();
+        $transport->expects(static::once())->method('hasRequiredFrom')->willReturn(true);
+
+        $sender = new SmsSender($transport);
+
+        static::assertTrue($sender->hasRequiredFrom());
+    }
+
+    public function testSendWithRequiredFromAndWithoutFromInformation(): void
+    {
+        $this->expectException(TransportException::class);
+        $this->expectExceptionMessage('The transport required the "From" information');
+
+        $message = new Message();
+        $envelope = new SmsEnvelope(new Phone('+100'), [new Phone('+2000')]);
+
+        /** @var MockObject|TransportInterface $transport */
+        $transport = $this->getMockBuilder(TransportInterface::class)->getMock();
+        $transport->expects(static::never())->method('send');
+        $transport->expects(static::once())->method('hasRequiredFrom')->willReturn(true);
+
+        $sender = new SmsSender($transport);
+        $sender->send($message, $envelope);
     }
 }

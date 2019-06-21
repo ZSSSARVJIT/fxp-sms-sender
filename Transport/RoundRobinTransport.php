@@ -78,6 +78,20 @@ class RoundRobinTransport implements TransportInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function hasRequiredFrom(): bool
+    {
+        foreach ($this->transports as $transport) {
+            if ($transport->hasRequiredFrom()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Rotates the transport list around and returns the first instance.
      *
      * @return null|TransportInterface
