@@ -11,14 +11,17 @@
 
 namespace Fxp\Component\SmsSender\Tests;
 
-use Fxp\Component\SmsSender\Bridge\Amazon;
-use Fxp\Component\SmsSender\Bridge\Twilio;
 use Fxp\Component\SmsSender\Exception\InvalidArgumentException;
 use Fxp\Component\SmsSender\Exception\LogicException;
 use Fxp\Component\SmsSender\Transport;
+use Fxp\Component\SmsSender\Transport\AbstractTransport;
+use Fxp\Component\SmsSender\Transport\FailoverTransport;
+use Fxp\Component\SmsSender\Transport\NullTransport;
+use Fxp\Component\SmsSender\Transport\RoundRobinTransport;
+use Fxp\Component\SmsSender\Transport\TransportInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
@@ -61,46 +64,28 @@ final class TransportTest extends TestCase
     {
         $transport = Transport::fromDsn('sms://null', $this->dispatcher, $this->httpClient, $this->logger);
 
-        static::assertInstanceOf(Transport\NullTransport::class, $transport);
+        static::assertInstanceOf(NullTransport::class, $transport);
         $this->validateDispatcher($transport);
     }
 
     public function testFromDsnNullWithInvalidScheme(): void
     {
         $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('The "api" scheme is not supported for SMS Sender "null".');
+        $this->expectExceptionMessage('The "api" scheme is not supported for SMS Sender "null". Supported schemes are: "sms".');
 
         Transport::fromDsn('api://null', $this->dispatcher, $this->httpClient, $this->logger);
-    }
-
-    public function testFromDsnAmazon(): void
-    {
-        $dsn = 'api://access_key:secret_key@sns?region=region&sender_id=SenderId&type=Transactional';
-        $transport = Transport::fromDsn($dsn, $this->dispatcher, $this->httpClient, $this->logger);
-
-        static::assertInstanceOf(Amazon\SmsTransport::class, $transport);
-        $this->validateDispatcher($transport);
-    }
-
-    public function testFromDsnTwilio(): void
-    {
-        $dsn = 'api://account_id:token@twilio?region=region&accountSid=other_account_id';
-        $transport = Transport::fromDsn($dsn, $this->dispatcher, $this->httpClient, $this->logger);
-
-        static::assertInstanceOf(Twilio\SmsTransport::class, $transport);
-        $this->validateDispatcher($transport);
     }
 
     public function testFromDsnFailover(): void
     {
         $transport = Transport::fromDsn('sms://null || sms://null', $this->dispatcher, $this->httpClient, $this->logger);
-        static::assertInstanceOf(Transport\FailoverTransport::class, $transport);
+        static::assertInstanceOf(FailoverTransport::class, $transport);
     }
 
     public function testFromDsnRoundRobin(): void
     {
         $transport = Transport::fromDsn('sms://null && sms://null', $this->dispatcher, $this->httpClient, $this->logger);
-        static::assertInstanceOf(Transport\RoundRobinTransport::class, $transport);
+        static::assertInstanceOf(RoundRobinTransport::class, $transport);
     }
 
     public function testFromInvalidDsn(): void
@@ -114,7 +99,7 @@ final class TransportTest extends TestCase
     public function testFromInvalidDsnNoHost(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('The "?!" SMS Sender DSN must contain a sender name.');
+        $this->expectExceptionMessage('The "?!" SMS Sender DSN must contain a transport scheme.');
 
         Transport::fromDsn('?!');
     }
@@ -127,9 +112,9 @@ final class TransportTest extends TestCase
         Transport::fromDsn('sms://foobar');
     }
 
-    private function validateDispatcher(Transport\TransportInterface $transport): void
+    private function validateDispatcher(TransportInterface $transport): void
     {
-        $p = new \ReflectionProperty(Transport\AbstractTransport::class, 'dispatcher');
+        $p = new \ReflectionProperty(AbstractTransport::class, 'dispatcher');
         $p->setAccessible(true);
         static::assertSame($this->dispatcher, $p->getValue($transport));
     }

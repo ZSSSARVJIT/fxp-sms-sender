@@ -11,13 +11,17 @@
 
 namespace Fxp\Component\SmsSender;
 
-use Fxp\Component\SmsSender\Bridge\Amazon;
-use Fxp\Component\SmsSender\Bridge\Twilio;
-use Fxp\Component\SmsSender\Exception\InvalidArgumentException;
-use Fxp\Component\SmsSender\Exception\LogicException;
+use Fxp\Component\SmsSender\Bridge\Amazon\Transport\SnsTransportFactory;
+use Fxp\Component\SmsSender\Bridge\Twilio\Transport\TwilioTransportFactory;
+use Fxp\Component\SmsSender\Exception\UnsupportedHostException;
+use Fxp\Component\SmsSender\Transport\Dsn;
+use Fxp\Component\SmsSender\Transport\FailoverTransport;
+use Fxp\Component\SmsSender\Transport\NullTransportFactory;
+use Fxp\Component\SmsSender\Transport\RoundRobinTransport;
+use Fxp\Component\SmsSender\Transport\TransportFactoryInterface;
 use Fxp\Component\SmsSender\Transport\TransportInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
@@ -25,6 +29,27 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class Transport
 {
+    private const FACTORY_CLASSES = [
+        SnsTransportFactory::class,
+        TwilioTransportFactory::class,
+        NullTransportFactory::class,
+    ];
+
+    /**
+     * @var TransportFactoryInterface[]
+     */
+    private $factories;
+
+    /**
+     * Constructor.
+     *
+     * @param TransportFactoryInterface[] $factories The sms sender transport factories
+     */
+    public function __construct(iterable $factories)
+    {
+        $this->factories = $factories;
+    }
+
     /**
      * Create the transport form the DSN and include the failover or round robin logic if necessary.
      *
@@ -41,149 +66,91 @@ class Transport
         HttpClientInterface $client = null,
         LoggerInterface $logger = null
     ): TransportInterface {
+        $factory = new self(self::getDefaultFactories($dispatcher, $client, $logger));
+
+        return $factory->fromString($dsn);
+    }
+
+    /**
+     * Create the transport from the dsn string.
+     *
+     * @param string $dsn The dsn
+     *
+     * @return TransportInterface
+     */
+    public function fromString(string $dsn): TransportInterface
+    {
         // failover?
         $dsns = preg_split('/\s++\|\|\s++/', $dsn);
 
         if (\count($dsns) > 1) {
-            $transports = [];
-
-            foreach ($dsns as $sDsn) {
-                $transports[] = self::createTransport($sDsn, $dispatcher, $client, $logger);
-            }
-
-            return new Transport\FailoverTransport($transports);
+            return new FailoverTransport($this->createFromDsns($dsns));
         }
 
         // round robin?
         $dsns = preg_split('/\s++&&\s++/', $dsn);
 
         if (\count($dsns) > 1) {
-            $transports = [];
-
-            foreach ($dsns as $sDsn) {
-                $transports[] = self::createTransport($sDsn, $dispatcher, $client, $logger);
-            }
-
-            return new Transport\RoundRobinTransport($transports);
+            return new RoundRobinTransport($this->createFromDsns($dsns));
         }
 
-        return self::createTransport($dsn, $dispatcher, $client, $logger);
+        return $this->fromDsnObject(Dsn::fromString($dsn));
     }
 
     /**
-     * Create the transport from the DSN.
+     * Create the transport from the dsn instance.
      *
-     * @param string                        $dsn        The DSN to build the transport
-     * @param null|EventDispatcherInterface $dispatcher The event dispatcher
-     * @param null|LoggerInterface          $logger     The logger
-     * @param null|HttpClientInterface      $client     The custom http client
+     * @param Dsn $dsn The dsn instance
      *
      * @return TransportInterface
      */
-    protected static function createTransport(
-        string $dsn,
+    public function fromDsnObject(Dsn $dsn): TransportInterface
+    {
+        foreach ($this->factories as $factory) {
+            if ($factory->supports($dsn)) {
+                return $factory->create($dsn);
+            }
+        }
+
+        throw new UnsupportedHostException($dsn);
+    }
+
+    /**
+     * Create the transports from the dsn strings.
+     *
+     * @param string[] $dsns The dsn strings
+     *
+     * @return TransportInterface[]
+     */
+    private function createFromDsns(array $dsns): array
+    {
+        $transports = [];
+
+        foreach ($dsns as $dsn) {
+            $transports[] = $this->fromDsnObject(Dsn::fromString($dsn));
+        }
+
+        return $transports;
+    }
+
+    /**
+     * Get the default factories.
+     *
+     * @param null|EventDispatcherInterface $dispatcher The event dispatcher
+     * @param null|HttpClientInterface      $client     The http client
+     * @param null|LoggerInterface          $logger     The logger
+     *
+     * @return iterable
+     */
+    private static function getDefaultFactories(
         EventDispatcherInterface $dispatcher = null,
         HttpClientInterface $client = null,
         LoggerInterface $logger = null
-    ): TransportInterface {
-        if (false === $parsedDsn = parse_url($dsn)) {
-            throw new InvalidArgumentException(sprintf('The "%s" SMS Sender DSN is invalid.', $dsn));
+    ): iterable {
+        foreach (self::FACTORY_CLASSES as $factoryClass) {
+            if (class_exists($factoryClass)) {
+                yield new $factoryClass($dispatcher, $client, $logger);
+            }
         }
-
-        if (!isset($parsedDsn['host'])) {
-            throw new InvalidArgumentException(sprintf('The "%s" SMS Sender DSN must contain a sender name.', $dsn));
-        }
-
-        $method = 'create'.ucfirst($parsedDsn['host']).'Transport';
-
-        if (method_exists(static::class, $method)) {
-            $call = static::class.'::'.$method;
-
-            return $call($parsedDsn, $dispatcher, $logger, $client);
-        }
-
-        throw new LogicException(sprintf('The "%s" SMS Sender is not supported.', $parsedDsn['host']));
-    }
-
-    /**
-     * Create the Null transport.
-     *
-     * @param array                         $parsedDsn  The parsed dsn
-     * @param null|EventDispatcherInterface $dispatcher The event dispatcher
-     * @param null|LoggerInterface          $logger     The logger
-     *
-     * @return TransportInterface
-     */
-    protected static function createNullTransport(
-        array $parsedDsn,
-        EventDispatcherInterface $dispatcher = null,
-        LoggerInterface $logger = null
-    ): TransportInterface {
-        if ('sms' !== $parsedDsn['scheme']) {
-            throw new LogicException(sprintf('The "%s" scheme is not supported for SMS Sender "%s".', $parsedDsn['scheme'], $parsedDsn['host']));
-        }
-
-        return new Transport\NullTransport($dispatcher, $logger);
-    }
-
-    /**
-     * Create the Amazon SNS transport.
-     *
-     * @param array                         $parsedDsn  The parsed dsn
-     * @param null|EventDispatcherInterface $dispatcher The event dispatcher
-     * @param null|LoggerInterface          $logger     The logger
-     * @param null|HttpClientInterface      $client     The custom http client
-     *
-     * @return TransportInterface
-     */
-    protected static function createSnsTransport(
-        array $parsedDsn,
-        EventDispatcherInterface $dispatcher = null,
-        LoggerInterface $logger = null,
-        HttpClientInterface $client = null
-    ): TransportInterface {
-        TransportUtil::validateInstall(Amazon\SmsTransport::class, 'Amazon SNS', 'fxp/amazon-sms-sender');
-        parse_str($parsedDsn['query'] ?? '', $query);
-
-        return new Amazon\SmsTransport(
-            urldecode($parsedDsn['user'] ?? ''),
-            urldecode($parsedDsn['pass'] ?? ''),
-            $query['region'] ?? null,
-            $query['sender_id'] ?? null,
-            $query['type'] ?? null,
-            $dispatcher,
-            $client,
-            $logger
-        );
-    }
-
-    /**
-     * Create the Twilio transport.
-     *
-     * @param array                         $parsedDsn  The parsed dsn
-     * @param null|EventDispatcherInterface $dispatcher The event dispatcher
-     * @param null|LoggerInterface          $logger     The logger
-     * @param null|HttpClientInterface      $client     The custom http client
-     *
-     * @return TransportInterface
-     */
-    protected static function createTwilioTransport(
-        array $parsedDsn,
-        EventDispatcherInterface $dispatcher = null,
-        LoggerInterface $logger = null,
-        HttpClientInterface $client = null
-    ): TransportInterface {
-        TransportUtil::validateInstall(Twilio\SmsTransport::class, 'Twilio', 'fxp/twilio-sms-sender');
-        parse_str($parsedDsn['query'] ?? '', $query);
-
-        return new Twilio\SmsTransport(
-            urldecode($parsedDsn['user'] ?? ''),
-            urldecode($parsedDsn['pass'] ?? ''),
-            $query['accountSid'] ?? null,
-            $query['region'] ?? null,
-            $dispatcher,
-            $client,
-            $logger
-        );
     }
 }
