@@ -64,6 +64,16 @@ class RoundRobinTransport implements TransportInterface
     /**
      * {@inheritdoc}
      */
+    public function getName(): string
+    {
+        return implode(' '.$this->getNameSymbol().' ', array_map(static function (TransportInterface $transport) {
+            return $transport->getName();
+        }, $this->transports));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function send(RawMessage $message, SmsEnvelope $envelope = null): ?SentMessage
     {
         while ($transport = $this->getNextTransport()) {
@@ -89,6 +99,16 @@ class RoundRobinTransport implements TransportInterface
         }
 
         return false;
+    }
+
+    /**
+     * Get the name symbol.
+     *
+     * @return string
+     */
+    protected function getNameSymbol(): string
+    {
+        return '&&';
     }
 
     /**

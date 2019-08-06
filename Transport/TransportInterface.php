@@ -24,6 +24,13 @@ use Symfony\Component\Mime\RawMessage;
 interface TransportInterface
 {
     /**
+     * Get the name.
+     *
+     * @return string
+     */
+    public function getName(): string;
+
+    /**
      * Send the message.
      *
      * @param RawMessage       $message  The message

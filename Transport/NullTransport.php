@@ -23,6 +23,14 @@ final class NullTransport extends AbstractTransport
     /**
      * {@inheritdoc}
      */
+    public function getName(): string
+    {
+        return 'sms://null';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function doSend(SentMessage $message): void
     {
     }

@@ -24,6 +24,16 @@ class FailoverTransport extends RoundRobinTransport
     private $currentTransport;
 
     /**
+     * Get the name symbol.
+     *
+     * @return string
+     */
+    protected function getNameSymbol(): string
+    {
+        return '||';
+    }
+
+    /**
      * {@inheritdoc}
      */
     protected function getNextTransport(): ?TransportInterface

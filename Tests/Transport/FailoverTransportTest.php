@@ -25,6 +25,18 @@ use Symfony\Component\Mime\RawMessage;
  */
 final class FailoverTransportTest extends TestCase
 {
+    public function testGetName(): void
+    {
+        $t1 = $this->createMock(TransportInterface::class);
+        $t1->expects(static::once())->method('getName')->willReturn('t1://local');
+
+        $t2 = $this->createMock(TransportInterface::class);
+        $t2->expects(static::once())->method('getName')->willReturn('t2://local');
+
+        $t = new FailoverTransport([$t1, $t2]);
+        static::assertEquals('t1://local || t2://local', $t->getName());
+    }
+
     public function testSendNoTransports(): void
     {
         $this->expectException(TransportException::class);

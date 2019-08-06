@@ -24,6 +24,12 @@ use Symfony\Component\Mime\Message;
  */
 final class NullTransportTest extends TestCase
 {
+    public function testGetName(): void
+    {
+        $t = new NullTransport();
+        static::assertEquals('sms://null', $t->getName());
+    }
+
     public function testSend(): void
     {
         $transport = new NullTransport();
