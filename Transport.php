@@ -147,10 +147,14 @@ class Transport
         HttpClientInterface $client = null,
         LoggerInterface $logger = null
     ): iterable {
+        $factories = [];
+
         foreach (self::FACTORY_CLASSES as $factoryClass) {
             if (class_exists($factoryClass)) {
-                yield new $factoryClass($dispatcher, $client, $logger);
+                $factories[] = new $factoryClass($dispatcher, $client, $logger);
             }
         }
+
+        return $factories;
     }
 }
