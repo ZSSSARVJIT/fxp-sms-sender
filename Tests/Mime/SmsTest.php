@@ -63,10 +63,10 @@ final class SmsTest extends TestCase
     {
         $sms = new Sms();
 
-        static::assertCount(0, $sms->getHeaders()->getAll());
+        static::assertCount(0, $sms->getHeaders()->all());
 
         $sms->addHeader(new UnstructuredHeader('foo', 'Bar'));
 
-        static::assertCount(1, $sms->getHeaders()->getAll());
+        static::assertCount(1, $sms->getHeaders()->all());
     }
 }

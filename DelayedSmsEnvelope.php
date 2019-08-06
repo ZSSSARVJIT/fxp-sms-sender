@@ -120,7 +120,7 @@ class DelayedSmsEnvelope extends SmsEnvelope
         $recipients = [];
 
         /** @var MailboxListHeader $header */
-        foreach ($headers->getAll('to') as $header) {
+        foreach ($headers->all('to') as $header) {
             /** @var Phone $phone */
             foreach ($header->getAddresses() as $phone) {
                 $recipients[] = new Phone($phone->getPhone());
